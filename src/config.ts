@@ -1,9 +1,10 @@
-import { readFileSync, existsSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { resolve, dirname, relative } from "node:path";
+import { pathToFileURL } from "node:url";
 import picomatch from "picomatch";
 import type { DesignSystemConfig } from "./types.js";
 
-const CONFIG_FILENAME = "driftguard.config.json";
+const CONFIG_FILENAME = "driftguard.config.ts";
 
 export function findConfigPath(startDir?: string): string | null {
   let dir = resolve(startDir ?? process.cwd());
@@ -21,7 +22,7 @@ export function findConfigPath(startDir?: string): string | null {
   }
 }
 
-export function loadConfig(startDir?: string): DesignSystemConfig {
+export async function loadConfig(startDir?: string): Promise<DesignSystemConfig> {
   const configPath = findConfigPath(startDir);
   if (!configPath) {
     throw new Error(
@@ -29,10 +30,9 @@ export function loadConfig(startDir?: string): DesignSystemConfig {
     );
   }
 
-  const raw = JSON.parse(readFileSync(configPath, "utf-8")) as Record<
-    string,
-    unknown
-  >;
+  const configUrl = pathToFileURL(configPath).href;
+  const module = await import(configUrl);
+  const raw = (module.default || module) as Record<string, unknown>;
 
   // Validate required structure
   if (!raw.tokens || typeof raw.tokens !== "object") {

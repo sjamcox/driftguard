@@ -10,9 +10,9 @@ const cli = resolve(projectRoot, "dist/cli.js");
 
 // Ensure we have a config in place for the hook
 before(() => {
-  const configDest = resolve(projectRoot, "driftguard.config.json");
+  const configDest = resolve(projectRoot, "driftguard.config.ts");
   if (!existsSync(configDest)) {
-    const configSrc = resolve(fixturesDir, "driftguard.config.json");
+    const configSrc = resolve(fixturesDir, "driftguard.config.ts");
     writeFileSync(configDest, readFileSync(configSrc));
   }
 });

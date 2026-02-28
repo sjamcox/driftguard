@@ -4,13 +4,10 @@ import { writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { validate } from "../src/validator.js";
 import type { DesignSystemConfig } from "../src/types.js";
-import { readFileSync } from "node:fs";
+import fixtureConfig from "./fixtures/driftguard.config.js";
 
 const fixturesDir = resolve(import.meta.dirname!, "fixtures");
-
-const config: DesignSystemConfig = JSON.parse(
-  readFileSync(resolve(fixturesDir, "driftguard.config.json"), "utf-8"),
-);
+const config: DesignSystemConfig = fixtureConfig;
 
 describe("validator", () => {
   it("returns passed:true for valid fixture", () => {
@@ -38,7 +35,7 @@ describe("validator", () => {
   });
 
   it("returns passed:true for non-JSX files", () => {
-    const result = validate(resolve(fixturesDir, "driftguard.config.json"), config);
+    const result = validate(resolve(fixturesDir, "driftguard.config.ts"), config);
     assert.equal(result.passed, true);
     assert.equal(result.score, 100);
   });

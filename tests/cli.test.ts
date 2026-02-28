@@ -23,11 +23,11 @@ function run(args: string, opts?: { cwd?: string }): { stdout: string; exitCode:
 
 // Ensure config exists for validate tests
 before(() => {
-  const configDest = resolve(projectRoot, "driftguard.config.json");
+  const configDest = resolve(projectRoot, "driftguard.config.ts");
   if (!existsSync(configDest)) {
     writeFileSync(
       configDest,
-      readFileSync(resolve(fixturesDir, "driftguard.config.json")),
+      readFileSync(resolve(fixturesDir, "driftguard.config.ts")),
     );
   }
 });
@@ -82,7 +82,7 @@ describe("CLI init", () => {
     const { exitCode, stdout } = run("init", { cwd: tmpDir });
     assert.equal(exitCode, 0);
     assert.ok(stdout.includes("driftguard initialized"));
-    assert.ok(existsSync(join(tmpDir, "driftguard.config.json")));
+    assert.ok(existsSync(join(tmpDir, "driftguard.config.ts")));
     assert.ok(existsSync(join(tmpDir, ".claude", "settings.json")));
 
     // Verify the settings contain the hook
@@ -105,18 +105,18 @@ describe("CLI generate", () => {
   before(() => {
     mkdirSync(join(tmpDir, "src"), { recursive: true });
     writeFileSync(
-      join(tmpDir, "driftguard.config.json"),
-      JSON.stringify({
-        tokens: {
-          colors: { primary: "#0055FF" },
-          spacingScale: [4, 8, 16],
-        },
-        components: {},
-        generate: {
-          ts: "src/tokens.ts",
-          css: "src/tokens.css",
-        },
-      }),
+      join(tmpDir, "driftguard.config.ts"),
+      `export default {
+  tokens: {
+    colors: { primary: "#0055FF" },
+    spacingScale: [4, 8, 16],
+  },
+  components: {},
+  generate: {
+    ts: "src/tokens.ts",
+    css: "src/tokens.css",
+  },
+};`,
     );
   });
 

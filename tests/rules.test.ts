@@ -7,12 +7,10 @@ import { noHardcodedColors } from "../src/rules/no-hardcoded-colors.js";
 import { spacingScale } from "../src/rules/spacing-scale.js";
 import { usePrimitives } from "../src/rules/use-primitives.js";
 import type { DesignSystemConfig, RuleContext } from "../src/types.js";
+import fixtureConfig from "./fixtures/driftguard.config.js";
 
 const fixturesDir = resolve(import.meta.dirname!, "fixtures");
-
-const config: DesignSystemConfig = JSON.parse(
-  readFileSync(resolve(fixturesDir, "driftguard.config.json"), "utf-8"),
-);
+const config: DesignSystemConfig = fixtureConfig;
 
 function parseCode(code: string) {
   return parse(code, {

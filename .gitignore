@@ -4,8 +4,8 @@ node_modules/
 # Build output
 dist/
 
-# Local config
-driftguard.config.json
+# Local config (but not test fixtures)
+/driftguard.config.ts
 
 # Environment variables
 .env

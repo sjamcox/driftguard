@@ -17,8 +17,8 @@ program
   .command("validate <file>")
   .description("Validate a .tsx/.jsx file against the design system")
   .option("--json", "Output results as JSON")
-  .action((file: string, opts: { json?: boolean }) => {
-    const config = loadConfig();
+  .action(async (file: string, opts: { json?: boolean }) => {
+    const config = await loadConfig();
     const result = validate(file, config);
 
     if (opts.json) {
@@ -40,8 +40,8 @@ program
 program
   .command("generate")
   .description("Generate token files from the design system config")
-  .action(() => {
-    runGenerate();
+  .action(async () => {
+    await runGenerate();
   });
 
 program

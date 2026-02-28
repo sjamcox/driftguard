@@ -1,6 +1,6 @@
 import type { Node } from "@babel/types";
 import type { TraverseOptions } from "@babel/traverse";
-import type { BabelAST, Rule, RuleContext, Violation } from "../types.js";
+import type { BabelAST, Rule, RuleContext, Violation, ColorValue } from "../types.js";
 
 // @babel/traverse CJS interop — runtime default may be nested
 import _traverse from "@babel/traverse";
@@ -48,11 +48,30 @@ function isHardcodedColor(value: string): boolean {
   return false;
 }
 
+function flattenColorPaths(
+  colors: Record<string, ColorValue>,
+  prefix = "colors",
+): string[] {
+  const paths: string[] = [];
+
+  for (const [key, value] of Object.entries(colors)) {
+    const path = `${prefix}.${key}`;
+    if (typeof value === "string") {
+      paths.push(`${path} (${value})`);
+    } else {
+      paths.push(...flattenColorPaths(value, path));
+    }
+  }
+
+  return paths;
+}
+
 function buildSuggestion(ctx: RuleContext): string {
-  const names = Object.entries(ctx.config.tokens.colors)
-    .map(([name, hex]) => `colors.${name} (${hex})`)
-    .join(", ");
-  return `Use one of: ${names}`;
+  const paths = flattenColorPaths(ctx.config.tokens.colors);
+  const preview = paths.slice(0, 3).join(", ");
+  return paths.length > 3
+    ? `Use one of: ${preview}, ... (${paths.length} total)`
+    : `Use one of: ${preview}`;
 }
 
 export const noHardcodedColors: Rule = (ast: BabelAST, ctx: RuleContext): Violation[] => {

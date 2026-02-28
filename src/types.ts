@@ -5,11 +5,13 @@ export interface GenerateConfig {
   css?: string;
 }
 
+export type ColorValue = string | { [key: string]: ColorValue };
+
 export interface DesignSystemConfig {
   exclude?: string[];
   generate?: GenerateConfig;
   tokens: {
-    colors: Record<string, string>;
+    colors: Record<string, ColorValue>;
     spacingScale: number[];
   };
   components: Record<string, ComponentSpec>;

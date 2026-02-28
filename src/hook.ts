@@ -47,7 +47,7 @@ export async function runHook(): Promise<void> {
 
     let config;
     try {
-      config = loadConfig();
+      config = await loadConfig();
     } catch (err) {
       console.error(`driftguard hook: ${(err as Error).message}`);
       return;
