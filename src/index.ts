@@ -3,5 +3,5 @@ export type {
   DesignSystemConfig,
   ComponentSpec,
   PropMatch,
-  GenerateConfig,
+  ColorValue,
 } from "./types.js";

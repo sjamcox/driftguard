@@ -1,15 +1,9 @@
 import type { ParserOptions } from "@babel/parser";
 
-export interface GenerateConfig {
-  ts?: string;
-  css?: string;
-}
-
 export type ColorValue = string | { [key: string]: ColorValue };
 
 export interface DesignSystemConfig {
   exclude?: string[];
-  generate?: GenerateConfig;
   tokens: {
     colors: Record<string, ColorValue>;
     spacingScale: number[];

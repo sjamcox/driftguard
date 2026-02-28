@@ -3,7 +3,6 @@ import { loadConfig } from "./config.js";
 import { validate } from "./validator.js";
 import { formatHuman, formatJSON } from "./format.js";
 import { runInit } from "./init.js";
-import { runGenerate } from "./generate.js";
 import { runHook } from "./hook.js";
 
 const program = new Command();
@@ -35,13 +34,6 @@ program
   .description("Initialize driftguard in the current project")
   .action(() => {
     runInit();
-  });
-
-program
-  .command("generate")
-  .description("Generate token files from the design system config")
-  .action(async () => {
-    await runGenerate();
   });
 
 program

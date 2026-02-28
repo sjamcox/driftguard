@@ -39,12 +39,13 @@ Think of it as a design system consultant that never sleeps, never compromises, 
 ## Features
 
 - 🎯 **AST-based validation** — No regex hacks. Real parsing. Real rules.
-- 🎨 **Nested color tokens** — `colors.primary.hover`, not `primaryHover`. We're civilized here.
+- 🎨 **Nested color tokens** — Supports `colors.primary.hover` structure. Match your existing design system.
 - 📏 **Spacing scale enforcement** — If `18px` isn't in your scale, it's not going in your code.
 - 🧩 **Component primitives** — Automatically flag `<div onClick>` and suggest `<Button>`.
 - 🔗 **Claude Code integration** — Real-time validation on every file write via PostToolUse hooks.
 - 📊 **Compliance scoring** — Quantify drift. Track improvement. Ship with confidence.
-- 🎭 **TypeScript-first config** — Type-safe design tokens with full IDE support.
+- 🎭 **TypeScript-first config** — Declare your existing design tokens with full type safety.
+- 🔒 **AI-proof governance** — Prevents AI agents from modifying your design system config.
 
 ---
 
@@ -72,7 +73,7 @@ This creates:
 
 ### 2. Configure Your Design System
 
-Edit `driftguard.config.ts` with your actual tokens:
+Edit `driftguard.config.ts` to reference your existing design tokens:
 
 ```typescript
 import type { DesignSystemConfig } from "driftguard";
@@ -112,55 +113,14 @@ const config: DesignSystemConfig = {
       whenHasProp: ["onClick", "onPress"],
     },
   },
-
-  // Generate typed token files (optional but recommended)
-  generate: {
-    ts: "src/tokens.ts",
-    css: "src/tokens.css",
-  },
 };
 
 export default config;
 ```
 
-### 3. Generate Token Files
+**Important:** The color values in your config should match what you actually use in your codebase. DriftGuard validates against these values — it doesn't generate code for you. You bring your own design tokens.
 
-```bash
-npx driftguard generate
-```
-
-**TypeScript output** (`src/tokens.ts`):
-```typescript
-export const colors = {
-  primary: {
-    main: "var(--color-primary-main)",
-    hover: "var(--color-primary-hover)",
-    dark: "var(--color-primary-dark)",
-  },
-  text: {
-    primary: "var(--color-text-primary)",
-    secondary: "var(--color-text-secondary)",
-  },
-} as const;
-
-export const spacing = [0, 4, 8, 12, 16, 24, 32, 48, 64] as const;
-```
-
-**CSS output** (`src/tokens.css`):
-```css
-:root {
-  --color-primary-main: #0055FF;
-  --color-primary-hover: #0044DD;
-  --color-primary-dark: #003399;
-  --color-text-primary: #111111;
-  --color-text-secondary: #6B7280;
-  --spacing-4: 4px;
-  --spacing-8: 8px;
-  /* ... */
-}
-```
-
-### 4. Validate Files
+### 3. Validate Files
 
 ```bash
 # Validate a single file
@@ -298,23 +258,6 @@ npx driftguard validate src/App.tsx --json
 - `0` — File passes validation
 - `1` — File has violations
 
-### `generate`
-
-Generate TypeScript and CSS token files from your config.
-
-```bash
-npx driftguard generate
-```
-
-Requires a `generate` field in your config:
-
-```typescript
-generate: {
-  ts: "src/tokens.ts",
-  css: "src/tokens.css",
-}
-```
-
 ### `hook`
 
 PostToolUse hook for Claude Code. Not for manual use.
@@ -337,21 +280,15 @@ interface DesignSystemConfig {
   exclude?: string[];
 
   tokens: {
-    // Nested color definitions
+    // Nested color definitions that match your existing tokens
     colors: Record<string, ColorValue>;
 
-    // Spacing scale (in pixels)
+    // Spacing scale (in pixels) that match your existing scale
     spacingScale: number[];
   };
 
   // Component replacement rules
   components: Record<string, ComponentSpec>;
-
-  // Token generation config
-  generate?: {
-    ts?: string;   // TypeScript output path
-    css?: string;  // CSS output path
-  };
 }
 ```
 
@@ -418,6 +355,58 @@ TextInput: {
   ],
 }
 ```
+
+---
+
+## Protected Files
+
+**IMPORTANT:** DriftGuard prevents AI agents from modifying your design system configuration.
+
+### Config File Protection
+
+The `driftguard.config.ts` file is **protected from AI edits**. If an AI agent attempts to write to it, the PostToolUse hook will **block the write**:
+
+```
+DRIFTGUARD: Cannot edit driftguard.config.ts
+
+This file is protected from AI modifications to enforce design system governance.
+
+Only humans should modify the design system source of truth.
+
+If you need to add a token, ask the user to edit driftguard.config.ts manually.
+```
+
+### Why This Matters
+
+Without this protection, AI agents can "solve" validation errors by adding tokens to your design system instead of using existing ones. This defeats the entire purpose of having a constraint system.
+
+**Example of what we prevent:**
+```tsx
+// AI writes this code:
+<div style={{ color: "#FF69B4" }}>Hot pink text</div>
+
+// DriftGuard flags it as a violation
+
+// Without protection, AI might:
+// 1. Edit driftguard.config.ts
+// 2. Add hotPink: "#FF69B4" to colors
+// 3. Problem "solved" 🙃
+
+// With protection, AI must:
+// 1. Ask user which existing token to use
+// 2. Use colors.accent.main or colors.error.main
+// 3. Design system remains coherent ✅
+```
+
+### Expanding Your Design System
+
+Only humans should add tokens. When you need to add a color or spacing value:
+
+1. **Edit `driftguard.config.ts`** manually
+2. **Commit the change**
+3. The AI will have access to the new token on the next validation run
+
+Your design system evolves intentionally, not accidentally
 
 ---
 

@@ -3,7 +3,12 @@ import { resolve, join } from "node:path";
 import type { DesignSystemConfig } from "./types.js";
 
 const DEFAULT_CONFIG: DesignSystemConfig = {
-  exclude: ["src/components/core/**", "src/design-system/**"],
+  exclude: [
+    "src/components/core/**",
+    "src/design-system/**",
+    "src/tokens.ts",
+    "src/tokens.css",
+  ],
   tokens: {
     colors: {
       primary: {
@@ -29,17 +34,16 @@ const DEFAULT_CONFIG: DesignSystemConfig = {
       replaces: ["div", "span"],
       whenHasProp: ["onClick", "onPress"],
     },
-  },
-  generate: {
-    ts: "src/tokens.ts",
-    css: "src/tokens.css",
   },
 };
 
 const CONFIG_TEMPLATE = `import type { DesignSystemConfig } from "driftguard";
 
 const config: DesignSystemConfig = {
-  exclude: ["src/components/core/**", "src/design-system/**"],
+  exclude: [
+    "src/components/core/**",
+    "src/design-system/**",
+  ],
   tokens: {
     colors: {
       primary: {
@@ -65,10 +69,6 @@ const config: DesignSystemConfig = {
       replaces: ["div", "span"],
       whenHasProp: ["onClick", "onPress"],
     },
-  },
-  generate: {
-    ts: "src/tokens.ts",
-    css: "src/tokens.css",
   },
 };
 
