@@ -2,6 +2,25 @@
   "name": "driftguard",
   "version": "0.1.0",
   "description": "Deterministic design system compliance engine for AI-generated UI",
+  "author": "Sam Cox",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sjamcox/driftguard.git"
+  },
+  "homepage": "https://github.com/sjamcox/driftguard#readme",
+  "keywords": [
+    "design-system",
+    "linter",
+    "design-tokens",
+    "ai",
+    "claude",
+    "validation",
+    "typescript",
+    "react",
+    "jsx",
+    "compliance"
+  ],
   "type": "module",
   "bin": {
     "driftguard": "./dist/cli.js"
