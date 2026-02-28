@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { basename, resolve } from "node:path";
-import { loadConfig, findConfigPath, getProjectRoot } from "./config.js";
+import { loadConfig, findConfigPath, getProjectRoot, isExcluded } from "./config.js";
 import { validate } from "./validator.js";
 import { formatHuman } from "./format.js";
 
@@ -10,12 +10,21 @@ function hasValidExtension(filePath: string): boolean {
   return VALID_EXTENSIONS.some((ext) => filePath.endsWith(ext));
 }
 
-function isProtectedFile(filePath: string, projectRoot: string): boolean {
+function isProtectedFile(filePath: string, projectRoot: string, excludePatterns?: string[]): boolean {
   const absPath = resolve(filePath);
   const configPath = resolve(projectRoot, "driftguard.config.ts");
 
   // Block writes to config file
-  return absPath === configPath;
+  if (absPath === configPath) {
+    return true;
+  }
+
+  // Block writes to excluded files (design system source)
+  if (excludePatterns && isExcluded(absPath, excludePatterns, projectRoot)) {
+    return true;
+  }
+
+  return false;
 }
 
 export async function runHook(): Promise<void> {
@@ -59,18 +68,30 @@ export async function runHook(): Promise<void> {
       return;
     }
 
-    // Block writes to protected files (config)
-    if (isProtectedFile(filePath, projectRoot)) {
+    // Block writes to protected files (config + excluded files)
+    if (isProtectedFile(filePath, projectRoot, config.exclude)) {
       const fileName = basename(filePath);
+      const isConfigFile = filePath.endsWith("driftguard.config.ts");
+
       const decision = {
         decision: "block",
-        reason: `DRIFTGUARD: Cannot edit ${fileName}
+        reason: isConfigFile
+          ? `DRIFTGUARD: Cannot edit ${fileName}
 
 This file is protected from AI modifications to enforce design system governance.
 
 Only humans should modify the design system source of truth.
 
-If you need to add a token, ask the user to edit driftguard.config.ts manually.`,
+If you need to add a token, ask the user to edit driftguard.config.ts manually.`
+          : `DRIFTGUARD: Cannot edit ${fileName}
+
+This file is in your exclude list and protected from AI modifications.
+
+Excluded files are typically design system source code (primitives, tokens, etc.)
+that should only be modified by humans.
+
+Files matching these patterns are protected:
+${config.exclude?.map((p) => `  - ${p}`).join("\n")}`,
       };
       process.stdout.write(JSON.stringify(decision));
       return;

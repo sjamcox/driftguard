@@ -360,20 +360,48 @@ TextInput: {
 
 ## Protected Files
 
-**IMPORTANT:** DriftGuard prevents AI agents from modifying your design system configuration.
+**IMPORTANT:** DriftGuard prevents AI agents from modifying your design system source code.
 
-### Config File Protection
+### What's Protected
 
-The `driftguard.config.ts` file is **protected from AI edits**. If an AI agent attempts to write to it, the PostToolUse hook will **block the write**:
+All files in your `exclude` patterns are **protected from AI edits**, plus the config file itself:
 
+1. **`driftguard.config.ts`** — Your design system configuration
+2. **Any files matching `exclude` patterns** — Your design system source (primitives, tokens, etc.)
+
+**Default protected paths:**
+```typescript
+exclude: [
+  "src/components/core/**",    // Your design system primitives
+  "src/design-system/**",       // Your design system source
+]
+```
+
+### How Protection Works
+
+If an AI agent attempts to write to a protected file, the PostToolUse hook **blocks the write**:
+
+**For config file:**
 ```
 DRIFTGUARD: Cannot edit driftguard.config.ts
 
 This file is protected from AI modifications to enforce design system governance.
 
 Only humans should modify the design system source of truth.
+```
 
-If you need to add a token, ask the user to edit driftguard.config.ts manually.
+**For excluded files:**
+```
+DRIFTGUARD: Cannot edit Button.tsx
+
+This file is in your exclude list and protected from AI modifications.
+
+Excluded files are typically design system source code (primitives, tokens, etc.)
+that should only be modified by humans.
+
+Files matching these patterns are protected:
+  - src/components/core/**
+  - src/design-system/**
 ```
 
 ### Why This Matters
@@ -433,6 +461,8 @@ DriftGuard exists because **deterministic validation** is the only way to ensure
 We don't make them.
 
 If your design system says 18px isn't in the scale, then 18px doesn't go in the code. If your design system says `<div onClick>` should be a `<Button>`, then it should be a `<Button>`.
+
+And your design system primitives? **Protected.** AI agents can use them, but they can't modify them. That's what the `exclude` list is for.
 
 "But what if we just—"
 No.
