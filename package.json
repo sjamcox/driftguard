@@ -1,6 +1,6 @@
 {
   "name": "driftguard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Deterministic design system compliance engine for AI-generated UI",
   "author": "Sam Cox",
   "license": "MIT",
