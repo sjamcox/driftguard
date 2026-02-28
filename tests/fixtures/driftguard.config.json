@@ -1,0 +1,24 @@
+{
+  "exclude": ["excluded/**"],
+  "tokens": {
+    "colors": {
+      "primary": "#0055FF",
+      "secondary": "#6B7280",
+      "text": "#111111",
+      "background": "#FFFFFF"
+    },
+    "spacingScale": [4, 8, 12, 16, 24, 32, 48, 64]
+  },
+  "components": {
+    "Button": {
+      "mustUse": true,
+      "replaces": ["div", "span"],
+      "whenHasProp": ["onClick", "onPress"]
+    },
+    "TextInput": {
+      "mustUse": true,
+      "replaces": ["input"],
+      "whenHasProp": [{ "prop": "type", "value": "text" }]
+    }
+  }
+}
